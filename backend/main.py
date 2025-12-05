@@ -3,9 +3,9 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get("/api/")
-def api_root():
-    return {"msg": "FastAPI работает"}
+def root():
+    return {"message": "FastAPI работает через Nginx HTTPS!"}
 
 @app.get("/api/hello")
 def hello():
-    return {"msg": "Привет с FastAPI!"}
+    return {"status": "ok", "msg": "Привет с FastAPI!"}
