@@ -1,8 +1,8 @@
 {
-  email admin@${DOMAIN}
+  email admin@bezzze.ru
 }
 
-${DOMAIN} {
+bezzze.ru {
     root * /usr/share/nginx/html
 
     handle_path /api/* {
