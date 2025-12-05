@@ -28,7 +28,7 @@ services:
       - DB_POSTGRESDB_USER=${POSTGRES_USER}
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ./n8n_data:/home/node/.n8n
+      - ./n8n_data:/home/node/n8n
     networks:
       - internal
     depends_on:
