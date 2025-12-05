@@ -124,41 +124,45 @@ server {
 
 # NGINX
 
-  server {
-      listen 443 ssl;
-      server_name bezzze.ru;
-  
-      root /usr/share/nginx/html;
-      index index.html;
-  
-      # SSL сертификаты
-      ssl_certificate /etc/letsencrypt/live/bezzze.ru/fullchain.pem;
-      ssl_certificate_key /etc/letsencrypt/live/bezzze.ru/privkey.pem;
-  
-      ssl_protocols TLSv1.2 TLSv1.3;
-      ssl_ciphers HIGH:!aNULL:!MD5;
-  
-      # FastAPI прокси
-      location /api/ {
-          proxy_pass http://fastapi:8000/;
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-      }
-  
-      # N8N прокси
-      location /n8n/ {
-          proxy_pass http://n8n:5678/;
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-      }
-  
-      # Статический сайт
-      location / {
-          try_files $uri $uri/ /index.html;
-      }
-  }
+    server {
+        listen 80;
+        server_name bezzze.ru;
+    
+        return 301 https://$host$request_uri;
+    }
+    
+    server {
+        listen 443 ssl;
+        server_name bezzze.ru;
+    
+        root /usr/share/nginx/html;
+        index index.html;
+    
+        ssl_certificate /etc/letsencrypt/live/bezzze.ru/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/bezzze.ru/privkey.pem;
+    
+        # ===== FASTAPI =====
+        location /api/ {
+            proxy_pass http://127.0.0.1:8000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    
+        # ===== N8N =====
+        location /n8n/ {
+            proxy_pass http://127.0.0.1:5678/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+        }
+    
+        # Статический сайт
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
+
+
 
