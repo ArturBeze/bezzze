@@ -1,74 +1,28 @@
 version: "3.9"
 
 services:
-  fastapi:
-    build: ./backend
-    container_name: fastapi
-    restart: always
-    ports:
-      - "8000:8000"
-    networks:
-      - internal
-
   n8n:
     image: n8nio/n8n:latest
     container_name: n8n
-    env_file: .env
-    restart: always
-    expose:
-      - "5678:5678"
+    restart: unless-stopped
+    environment:
+      - GENERIC_TIMEZONE=Europe/Moscow
+
+      # ==== ВАЖНО для работы по пути /n8n ====
+      - N8N_PATH=/n8n
+      - N8N_ENDPOINT_WEBHOOK=/n8n/
+      - N8N_ENDPOINT_WEBHOOK_TEST=/n8n/
+      - WEBHOOK_URL=https://bezzze.ru/n8n/
+
     volumes:
       - ./n8n_data:/home/node/.n8n
-    environment:
-      - N8N_HOST=bezzze.ru
-      - N8N_PORT=5678
-      - N8N_PATH=/n8n
-      - WEBHOOK_URL=https://bezzze.ru/n8n
-      - GENERIC_TIMEZONE=Europe/Moscow
-    networks:
-      - internal
 
-  postgres:
-    image: postgres:16
-    container_name: postgres
-    restart: always
-    env_file: .env
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - internal
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: always
-    networks:
-      - internal
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: always
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     ports:
-      - "15672:15672" # панель администратора
-    networks:
-      - internal
+      - "5678:5678"   # nginx с хоста будет проксировать сюда
 
-  mongo:
-    image: mongo:7
-    container_name: mongo
-    restart: always
-    volumes:
-      - mongodata:/data/db
-    networks:
-      - internal
-
-networks:
-  internal:
-
-volumes:
-  pgdata:
-  mongodata:
+  fastapi:
+    build: ./backend   # Папка с Dockerfile FastAPI
+    container_name: fastapi
+    restart: unless-stopped
+    ports:
+      - "8000:8000"   # nginx будет проксировать сюда
