@@ -5,11 +5,13 @@
 ${DOMAIN} {
     root * /usr/share/nginx/html
 
+    handle_path /api/* {
+        reverse_proxy fastapi:8000
+    }
+
     handle_path /n8n/* {
         reverse_proxy n8n:5678
     }
 
-    handle {
-        file_server
-    }
+    file_server
 }
