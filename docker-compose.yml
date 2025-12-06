@@ -17,7 +17,7 @@ services:
   # --- New FastAPI Service ---
   fastapi:
     build:
-      context: ./app  # Points to the directory with the Dockerfile
+      context: ./fastapi  # Points to the directory with the Dockerfile
     container_name: fastapi-bezzze-ru
     restart: unless-stopped
     # FastAPI is accessed internally on the host at 127.0.0.1:8000
