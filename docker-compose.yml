@@ -1,37 +1,25 @@
 version: '3.8'
 
 services:
+  # --- Existing n8n Service ---
   n8n:
     image: n8nio/n8n:latest
+    container_name: n8n-bezzze-ru
     restart: unless-stopped
-    env_file: .env
-    environment:
-      - N8N_HOST=${N8N_HOST}
-      - N8N_PORT=${N8N_PORT}
-      - N8N_PROTOCOL=${N8N_PROTOCOL}
-      - N8N_PATH=${N8N_PATH}
-      - WEBHOOK_URL=${WEBHOOK_URL}
+    env_file:
+      - .env
+    # n8n is accessed internally on the host at 127.0.0.1:5678
     ports:
-      - "${N8N_PORT}:${N8N_PORT}"
+      - 127.0.0.1:5678:5678
     volumes:
       - ./n8n_data:/home/node/n8n
 
+  # --- New FastAPI Service ---
   fastapi:
-    build: ./fastapi
+    build:
+      context: ./app  # Points to the directory with the Dockerfile
+    container_name: fastapi-bezzze-ru
     restart: unless-stopped
-    env_file: .env
-    environment:
-      - PORT=${FASTAPI_PORT}
+    # FastAPI is accessed internally on the host at 127.0.0.1:8000
     ports:
-      - "${FASTAPI_PORT}:${FASTAPI_PORT}"
-
-  postgres:
-    image: postgres:15
-    restart: always
-    env_file: .env
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - 127.0.0.1:8000:80
