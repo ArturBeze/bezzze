@@ -21,6 +21,10 @@ Privkey certificate location
 
     ssl_certificate_key /etc/letsencrypt/live/bezzze.ru/privkey.pem;
 
+Check nginx status
+
+    sudo systemctl status nginx
+
 Check nginx
 
     sudo nginx -t
