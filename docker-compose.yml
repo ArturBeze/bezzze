@@ -114,7 +114,7 @@ services:
 #      QUEUE_BULL_REDIS_PORT: 6379
 
     volumes:
-      - ./n8n_data:/home/node/n8n
+      - ./n8n_data:/home/node
       - ./n8n-local-files:/files
     depends_on:
       postgres:
