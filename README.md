@@ -10,6 +10,8 @@ sudo nano /etc/nginx/sites-available/bezzze.ru
 
 sudo nano /etc/nginx/sites-enabled/bezzze.ru
 
+sudo ln -s /etc/nginx/sites-available/bezzze.ru /etc/nginx/sites-enabled/
+
 
 Fullchain certificate location
 
