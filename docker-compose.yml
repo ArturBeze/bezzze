@@ -9,6 +9,8 @@ services:
       - "8000:8000"
     networks:
       - internal
+#    expose:
+#      - "8000"  # важно: только во внутренней сети
 
   postgres:
     image: postgres:15
@@ -42,11 +44,12 @@ services:
       N8N_SECURE_COOKIE: false
 
       N8N_PORT: 5678
-      N8N_PROTOCOL: http
+      N8N_PROTOCOL: https
       N8N_HOST: n8n.bezzze.ru
 
-      WEBHOOK_URL: https://n8n.bezzze.ru/
       VUE_APP_PUBLIC_PATH: /     # важно!
+      WEBHOOK_URL: https://n8n.bezzze.ru/
+      WEBHOOK_TUNNEL_URL: https://n8n.bezzze.ru/
 
       N8N_EDITOR_BASE_URL: https://n8n.bezzze.ru/
       N8N_ENDPOINT_WEBHOOK: webhook
