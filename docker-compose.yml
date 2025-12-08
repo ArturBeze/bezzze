@@ -30,6 +30,40 @@ services:
     networks:
       - internal
 
+  mongodb:
+    image: mongo:7
+    container_name: mongodb_app
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ./mongo_data:/data/db
+    networks:
+      - internal
+
+  redis:
+    image: redis:7
+    container_name: redis_app
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - internal
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_app
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "15672:15672"
+    networks:
+      - internal
+
   n8n:
     image: n8nio/n8n:latest
     container_name: n8n_app
