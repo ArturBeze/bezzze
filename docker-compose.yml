@@ -48,10 +48,13 @@ services:
       N8N_HOST: n8n.bezzze.ru
 
       VUE_APP_PUBLIC_PATH: /     # важно!
+
       WEBHOOK_URL: https://n8n.bezzze.ru/
       WEBHOOK_TUNNEL_URL: https://n8n.bezzze.ru/
 
       N8N_EDITOR_BASE_URL: https://n8n.bezzze.ru/
+      N8N_PUBLIC_URL: https://n8n.bezzze.ru/
+
       N8N_ENDPOINT_WEBHOOK: webhook
       N8N_ENDPOINT_WEBHOOK_TEST: webhook-test
 
