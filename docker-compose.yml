@@ -20,13 +20,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
-    networks:
-      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - internal
 
   n8n:
     image: n8nio/n8n:latest
@@ -34,8 +34,6 @@ services:
     restart: always
     ports:
       - "5678:5678"
-    networks:
-      - internal
     env_file:
       - .env
     environment:
@@ -43,29 +41,46 @@ services:
       N8N_DIAGNOSTICS_ENABLED: false
       N8N_SECURE_COOKIE: false
 
-      #N8N_PORT: 5678
-      #N8N_PROTOCOL: http
-      #N8N_HOST: n8n.bezzze.ru
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_HOST: n8n.bezzze.ru
 
-      #WEBHOOK_URL: https://n8n.bezzze.ru/
-      #VUE_APP_PUBLIC_PATH: /     # важно!
+      WEBHOOK_URL: https://n8n.bezzze.ru/
+      VUE_APP_PUBLIC_PATH: /     # важно!
 
-      #N8N_EDITOR_BASE_URL: https://n8n.bezzze.ru/
-      #N8N_ENDPOINT_WEBHOOK: webhook
-      #N8N_ENDPOINT_WEBHOOK_TEST: webhook-test
+      N8N_EDITOR_BASE_URL: https://n8n.bezzze.ru/
+      N8N_ENDPOINT_WEBHOOK: webhook
+      N8N_ENDPOINT_WEBHOOK_TEST: webhook-test
 
-      #DB_TYPE: postgres
-      #DB_POSTGRESDB_HOST: postgres
-      #DB_POSTGRESDB_PORT: 5432
-      #DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
-      #DB_POSTGRESDB_USER: ${POSTGRES_USER}
-      #DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_TYPE: postgres
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
 
     volumes:
       - ./n8n_data:/home/node/n8n
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/log:/var/log/nginx
+    depends_on:
+      - n8n
+    networks:
+      - internal
 
 networks:
   internal:
