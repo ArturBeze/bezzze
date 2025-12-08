@@ -53,15 +53,15 @@ services:
     networks:
       - internal
 
-  redis:
-    image: redis:7
-    container_name: redis_app
-    restart: always
-    command: ["redis-server", "--appendonly", "yes"]
-    volumes:
-      - ./redis_data:/data
-    networks:
-      - internal
+#  redis:
+#    image: redis:7
+#    container_name: redis_app
+#    restart: always
+#    command: ["redis-server", "--appendonly", "yes"]
+#    volumes:
+#      - ./redis_data:/data
+#    networks:
+#      - internal
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -110,12 +110,12 @@ services:
       DB_POSTGRESDB_USER: ${POSTGRES_USER}
       DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
 
-      QUEUE_BULL_REDIS_HOST: redis
-      QUEUE_BULL_REDIS_PORT: 6379
+#      QUEUE_BULL_REDIS_HOST: redis
+#      QUEUE_BULL_REDIS_PORT: 6379
 
     volumes:
-      - n8n_data:/home/node/n8n
-      - n8n-local-files:/files
+      - ./n8n_data:/home/node/n8n
+      - ./n8n-local-files:/files
     depends_on:
       postgres:
         condition: service_healthy
@@ -148,7 +148,7 @@ services:
 volumes:
   postgres_data:
   mongo_data:
-  redis_data:
+#  redis_data:
   n8n_data:
   n8n-local-files:
 
