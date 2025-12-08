@@ -1,7 +1,7 @@
 #version: '3.8'
 
 services:
-  api:
+  fastapi:
     build: ./fastapi
     container_name: fastapi_app
     restart: unless-stopped
@@ -9,6 +9,63 @@ services:
       - "8000:8000"
     networks:
       - internal
+
+  postgres:
+    image: postgres:15
+    container_name: postgres_app
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n_app
+    restart: always
+    ports:
+      - "5678:5678"
+    networks:
+      - internal
+    env_file:
+      - .env
+    environment:
+      N8N_LOG_LEVEL: info
+      N8N_DIAGNOSTICS_ENABLED: false
+      N8N_SECURE_COOKIE: false
+
+      #N8N_PORT: 5678
+      #N8N_PROTOCOL: http
+      #N8N_HOST: n8n.bezzze.ru
+
+      #WEBHOOK_URL: https://n8n.bezzze.ru/
+      #VUE_APP_PUBLIC_PATH: /     # важно!
+
+      #N8N_EDITOR_BASE_URL: https://n8n.bezzze.ru/
+      #N8N_ENDPOINT_WEBHOOK: webhook
+      #N8N_ENDPOINT_WEBHOOK_TEST: webhook-test
+
+      #DB_TYPE: postgres
+      #DB_POSTGRESDB_HOST: postgres
+      #DB_POSTGRESDB_PORT: 5432
+      #DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
+      #DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      #DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - ./n8n_data:/home/node/n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 networks:
   internal:
